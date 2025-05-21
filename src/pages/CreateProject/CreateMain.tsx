@@ -1,5 +1,4 @@
 import Footer from "@/components/Layout/Footer";
-import Header from "@/components/Layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -201,7 +200,6 @@ export default function CreateMain() {
                 // Determine if step is active, completed, or upcoming
                 const isCompleted = currentStep > step.number;
                 const isActive = currentStep === step.number;
-                const isUpcoming = currentStep < step.number;
 
                 // Determine connector line status
                 const showConnector = index < steps.length - 1;

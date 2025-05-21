@@ -6,16 +6,10 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import { Button } from "../ui/button";
-import { ChromeIcon, FacebookIcon, Menu, AppleIcon } from "lucide-react";
+import { Menu, AppleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 
 const Header = () => {
   const [loginOpen, setLoginOpen] = useState(false);
@@ -145,7 +139,7 @@ const Header = () => {
               <div className="w-full flex flex-col gap-3 mt-2">
                 <button
                   className="w-full flex items-center gap-3 border border-zinc-300 rounded-xl bg-white hover:bg-zinc-50 transition-colors py-3 px-4 text-base font-semibold text-zinc-800 shadow-sm"
-                  onClick={() => {}}
+                  onClick={googleLogin}
                 >
                   <div className="flex items-center justify-center">
                     <svg

@@ -20,16 +20,9 @@ export function ExperimentCard({
   creator,
   description,
   donationAmount,
-  donationGoal,
   image,
   category,
-  color,
 }: ExperimentCardProps) {
-  const donationPercentage = Math.min(
-    Math.round((donationAmount / donationGoal) * 100),
-    100
-  );
-
   const formattedDonation = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
