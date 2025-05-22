@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -11,853 +10,445 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle,
-  ChevronLeft,
-  Edit,
-  Rocket,
-  Trash2,
-  Upload,
-} from "lucide-react";
+import { Upload } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+const STORY_QUESTIONS = [
+  {
+    emoji: "💡",
+    question: "What inspired you to try this challenge?",
+    name: "motivation",
+    placeholder: "e.g. I've always wanted to try this!",
+  },
+  {
+    emoji: "🎯",
+    question: "Is there something you want to achieve or prove?",
+    name: "goal",
+    placeholder: "e.g. I want to show myself I can finish what I start.",
+  },
+  {
+    emoji: "🤝",
+    question: "Any support or resources you're looking for?",
+    name: "support",
+    placeholder: "e.g. Even a little encouragement or feedback helps!",
+  },
+];
+
+const CATEGORIES = [
+  { value: "creativity", label: "Creativity" },
+  { value: "tech", label: "Tech" },
+  { value: "lifestyle", label: "Lifestyle" },
+  { value: "social", label: "Social Experiment" },
+  { value: "fitness", label: "Fitness" },
+  { value: "learning", label: "Learning" },
+  { value: "professional", label: "Professional" },
+  { value: "other", label: "Other" },
+];
+
 export default function CreateMain() {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // step 1.
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({
     title: "",
     duration: "",
-    customDuration: "",
-    coverImage: null as string | null,
     category: "",
-
-    // step 2.
-    motivation: "",
-    worthTrying: "",
-    hopeToGain: "",
-
-    // step 3.
-    resources: "",
-    supportUsage: "",
-    additionalInfo: "",
+    coverImage: [] as string[],
+    story: ["", "", ""],
   });
+  const [storyIdx, setStoryIdx] = useState(0);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageUploading(true);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData({
-          ...formData,
-          coverImage: e.target?.result as string,
-        });
+        setForm((prev) => ({
+          ...prev,
+          coverImage:
+            prev.coverImage.length < 3 && e.target?.result
+              ? [...prev.coverImage, e.target.result as string]
+              : prev.coverImage,
+        }));
+        setImageUploading(false);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+  // Step1 input handler
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // Step2 story answer handler
+  const handleStoryChange = (v: string) => {
+    setForm((prev) => {
+      const next = [...prev.story];
+      next[storyIdx] = v;
+      return { ...prev, story: next };
     });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  // Step2 skip
+  const handleSkip = () => {
+    if (storyIdx < STORY_QUESTIONS.length - 1) setStoryIdx(storyIdx + 1);
   };
 
-  const handleRadioChange = (value: string) => {
-    setFormData({
-      ...formData,
-      duration: value,
-    });
+  // Step2 next
+  const handleNextStory = () => {
+    if (storyIdx < STORY_QUESTIONS.length - 1) setStoryIdx(storyIdx + 1);
+    else setSubmitted(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Challenge created: ", formData);
-    // navigator("/");
-  };
+  // Step1 complete condition
+  const canProceed =
+    form.title && form.duration && form.category && form.coverImage.length > 0;
 
-  const nextStep = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const goToStep = (step: number) => {
-    setCurrentStep(step);
-    window.scrollTo(0, 0);
-  };
-
-  const steps = [
-    {
-      number: 1,
-      title: "Challenge Basics",
-      color: "bg-blue-500",
-      textColor: "text-blue-600",
-      borderColor: "border-blue-500",
-      lightBg: "bg-blue-50",
-    },
-    {
-      number: 2,
-      title: "Your Story",
-      color: "bg-amber-500",
-      textColor: "text-amber-600",
-      borderColor: "border-amber-500",
-      lightBg: "bg-amber-50",
-    },
-    {
-      number: 3,
-      title: "Support & Resources",
-      color: "bg-emerald-500",
-      textColor: "text-emerald-600",
-      borderColor: "border-emerald-500",
-      lightBg: "bg-emerald-50",
-    },
-    {
-      number: 4,
-      title: "Preview & Launch",
-      color: "bg-purple-500",
-      textColor: "text-purple-600",
-      borderColor: "border-purple-500",
-      lightBg: "bg-purple-50",
-    },
-  ];
-
-  const currentStepInfo = steps[currentStep - 1];
+  // After submit: preview/share
+  if (submitted) {
+    return (
+      <div className="flex min-h-screen flex-col bg-gradient-to-b from-teal-50 to-zinc-50">
+        <main className="flex-1 flex flex-col items-center justify-center">
+          <Card className="w-full max-w-none md:max-w-[700px] mx-auto border-0 shadow-2xl rounded-3xl p-4 md:p-12 text-center animate-fade-in bg-white/90">
+            <div className="flex flex-col md:flex-row gap-8 items-center md:items-stretch">
+              {/* 이미지: 왼쪽(PC) / 상단(모바일) */}
+              <div className="flex-shrink-0 w-full md:w-72 flex justify-center items-center">
+                <div className="w-full flex justify-center items-center gap-2 flex-wrap">
+                  {form.coverImage.length > 0 ? (
+                    form.coverImage.map((img, idx) => (
+                      <img
+                        key={idx}
+                        src={img}
+                        alt={`cover ${idx + 1}`}
+                        className="aspect-square w-full md:w-80 max-w-xs h-auto object-cover rounded-2xl border-4 border-teal-100 shadow-lg"
+                      />
+                    ))
+                  ) : (
+                    <img
+                      src="/placeholder.svg"
+                      alt="cover"
+                      className="aspect-square w-full md:w-80 max-w-xs h-auto object-cover rounded-2xl border-4 border-teal-100 shadow-lg"
+                    />
+                  )}
+                </div>
+              </div>
+              {/* 정보/메시지/버튼: 오른쪽(PC) / 하단(모바일) */}
+              <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
+                <span className="text-5xl md:text-6xl mb-2">🎉</span>
+                <h2 className="text-2xl md:text-3xl font-extrabold mb-1 text-teal-600 drop-shadow">
+                  Challenge Submitted!
+                </h2>
+                <p className="mb-2 text-zinc-600 text-base md:text-lg">
+                  Your journey starts now. The Idoit community is cheering for
+                  you!
+                </p>
+                <div className="mb-4 mt-2">
+                  <span className="font-bold text-xl md:text-2xl text-zinc-800">
+                    {form.title}
+                  </span>
+                  <span className="text-zinc-500 ml-2">
+                    ({form.duration},{" "}
+                    {CATEGORIES.find((c) => c.value === form.category)?.label})
+                  </span>
+                </div>
+                <ul className="mb-6 text-left text-zinc-700 w-full max-w-none md:max-w-md mx-auto">
+                  {form.story.map(
+                    (s, i) =>
+                      s && (
+                        <li
+                          key={i}
+                          className="mb-1 text-base md:text-lg flex items-center gap-2"
+                        >
+                          <span>{STORY_QUESTIONS[i].emoji}</span>{" "}
+                          <span>{s}</span>
+                        </li>
+                      )
+                  )}
+                </ul>
+                <div className="mb-6 text-teal-500 font-semibold text-lg md:text-xl animate-fade-in">
+                  You did it! Ready for your next adventure?
+                </div>
+                <Button
+                  className="w-full max-w-xs mx-auto bg-teal-500 hover:bg-teal-600 text-white rounded-full text-lg py-3 shadow-lg transition-all"
+                  onClick={() => (window.location.href = "/")}
+                >
+                  Back to Home
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50">
-      <main className="flex-1">
-        {/* 뒤로가기 */}
-        <div className="max-w-[1400px] mx-auto px-3 relative">
+    <div className="flex min-h-screen flex-col bg-zinc-50 font-sans">
+      <main className="flex-1 flex flex-col items-center justify-center py-4 px-2 md:px-0">
+        {/* Back button */}
+        <div className="w-full max-w-none md:max-w-[1400px] mx-auto mb-4 px-2">
           <Link
             to="/"
-            className="inline-flex items-center text-zinc-600 hover:text-teal-600 transition-colors mt-6"
+            className="inline-flex items-center text-zinc-600 hover:text-teal-600 transition-colors text-sm md:text-base"
           >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            <span className="text-sm md:text-base">Back to Experiments</span>
+            <svg
+              className="h-4 w-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Experiments
           </Link>
         </div>
-
-        {/* Page Title */}
-        <section className="max-w-[1400px] mx-auto px-4 md:px-6 py-4 md:py-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 mb-2 md:mb-4">
-            Start a New Challenges
-          </h1>
-          <p className="text-sm md:text-base text-zinc-600 max-w-3xl">
-            Share your journey, document your process, and connect with others
-            who appreciate the value of learning through experimentation.
-          </p>
-        </section>
-
-        {/* Progress Steps */}
-        <section className="max-w-[1400px] mx-auto px-4 md:px-6 mb-8 md:mb-12">
-          {/* 모바일 화면 */}
-          <div className="md:hidden">
-            <div className="flex items-center justify-between mb-4">
-              <span
-                className={`text-sm font-medium ${currentStepInfo.textColor}`}
-              >
-                Step {currentStep} of {steps.length}
-              </span>
-              <span className="text-sm font-medium text-zinc-600">
-                {currentStepInfo.title}
-              </span>
-            </div>
-            <div className="relative h-2 bg-zinc-100 rounded-full overflow-hidden">
-              <div
-                className={`absolute top-0 left-0 h-full ${currentStepInfo.color} transition-all duration-300 rounded-full`}
-                style={{ width: `${(currentStep / steps.length) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* 데스크탑 화면 */}
-          <div className="hidden md:block max-w-4xl mx-auto">
-            <div className="flex justify-between items-center">
-              {steps.map((step, index) => {
-                // Determine if step is active, completed, or upcoming
-                const isCompleted = currentStep > step.number;
-                const isActive = currentStep === step.number;
-
-                // Determine connector line status
-                const showConnector = index < steps.length - 1;
-
-                return (
-                  <div key={step.number} className="flex-1 relative">
-                    <div className="flex flex-col items-center">
-                      {/* Step Circle */}
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 z-10 transition-all duration-300 ${
-                          isCompleted
-                            ? `${step.color} text-white`
-                            : isActive
-                            ? `border-2 ${step.borderColor} ${step.lightBg} ${step.textColor}`
-                            : "bg-white border-2 border-zinc-200 text-zinc-400"
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <CheckCircle className="h-6 w-6" />
-                        ) : (
-                          <span className="text-base font-semibold">
-                            {step.number}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Step Title */}
-                      <span
-                        className={`text-sm font-medium text-center transition-colors duration-300 ${
-                          isCompleted || isActive
-                            ? step.textColor
-                            : "text-zinc-400"
-                        }`}
-                      >
-                        {step.title}
+        <Card className="w-full max-w-none md:max-w-[1400px] mx-auto border border-zinc-200 shadow-md rounded-2xl animate-fade-in">
+          <CardContent className="p-4 md:p-16">
+            {/* Step 1: minimal info */}
+            {step === 1 && (
+              <div className="flex flex-col-reverse md:flex-row gap-8 md:gap-24 items-stretch">
+                {/* Form section */}
+                <div className="flex-1 min-w-0 w-full max-w-none md:max-w-xl mx-auto flex flex-col">
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-teal-500 font-bold text-base md:text-lg">
+                        Step 1
+                      </span>
+                      <span className="text-zinc-400 text-base md:text-lg">
+                        / 2
                       </span>
                     </div>
-
-                    {/* Connector Line */}
-                    {showConnector && (
-                      <div className="absolute top-6 left-1/2 w-full h-0.5 bg-zinc-200 -z-10">
-                        <div
-                          className={`absolute top-0 left-0 h-full transition-all duration-500 ${step.color}`}
-                          style={{
-                            width: isCompleted ? "100%" : "0%",
-                          }}
-                        ></div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* 입력 폼 */}
-        <section className="max-w-[1400px] mx-auto px-4 md:px-6 py-16">
-          <Card className="max-w-4xl mx-auto border border-zinc-200 shadow-sm">
-            <CardContent className="p-5 sm:p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* step 1 */}
-                {currentStep === 1 && (
-                  <div className="space-y-6">
-                    <div
-                      className={`p-4 rounded-lg ${currentStepInfo.lightBg} mb-6`}
-                    >
-                      <h2
-                        className={`text-xl sm:text-2xl font-bold ${currentStepInfo.textColor} mb-2`}
-                      >
-                        Step 1: Challenge Basics
-                      </h2>
-                      <p className="text-sm text-zinc-600">
-                        Let users get started quickly with minimal friction.
-                      </p>
+                    <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden mb-4">
+                      <div
+                        className="h-full bg-teal-400 transition-all duration-500 rounded-full"
+                        style={{ width: "50%" }}
+                      />
                     </div>
-
+                    <h2 className="text-2xl md:text-3xl font-bold mb-1">
+                      Start a Challenge
+                    </h2>
+                    <p className="text-zinc-500 text-sm md:text-base">
+                      Don't hesitate—just start!
+                    </p>
+                  </div>
+                  <div className="space-y-4">
                     <div>
-                      <Label
-                        htmlFor="title"
-                        className="text-sm md:text-base font-medium"
-                      >
+                      <Label htmlFor="title" className="text-base font-medium">
                         Challenge Title
                       </Label>
                       <Input
                         id="title"
                         name="title"
-                        value={formData.title}
+                        value={form.title}
                         onChange={handleChange}
-                        placeholder="e.g., Learn to play one ukulele song in 2 weeks"
-                        className="mt-1.5"
+                        placeholder="e.g. Learn to play one ukulele song in 2 weeks"
+                        className="mt-1.5 text-base md:text-lg"
                         required
                       />
                     </div>
-
                     <div>
-                      <Label className="text-sm md:text-base font-medium">
-                        Estimated Duration
-                      </Label>
-                      <RadioGroup
-                        value={formData.duration}
-                        onValueChange={handleRadioChange}
-                        className="mt-2 space-y-3"
+                      <Label className="text-base font-medium">Duration</Label>
+                      <Select
+                        onValueChange={(v) =>
+                          setForm((f) => ({ ...f, duration: v }))
+                        }
                       >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2 weeks" id="2weeks" />
-                          <Label
-                            htmlFor="2weeks"
-                            className="font-normal cursor-pointer"
-                          >
-                            2 weeks
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1 month" id="1month" />
-                          <Label
-                            htmlFor="1month"
-                            className="font-normal cursor-pointer"
-                          >
-                            1 month
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="custom" id="custom" />
-                          <Label
-                            htmlFor="custom"
-                            className="font-normal cursor-pointer"
-                          >
-                            Custom
-                          </Label>
-                        </div>
-                      </RadioGroup>
-
-                      {formData.duration === "custom" && (
-                        <Input
-                          name="customDuration"
-                          value={formData.customDuration}
-                          onChange={handleChange}
-                          placeholder="e.g., 6 weeks, 3 months"
-                          className="mt-3"
-                        />
-                      )}
+                        <SelectTrigger className="mt-1.5 w-full text-base md:text-lg">
+                          <SelectValue placeholder="Select duration" />
+                        </SelectTrigger>
+                        <SelectContent position="popper" className="w-full">
+                          <SelectItem value="1 week">1 week</SelectItem>
+                          <SelectItem value="2 weeks">2 weeks</SelectItem>
+                          <SelectItem value="1 month">1 month</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-
                     <div>
-                      <Label
-                        htmlFor="coverImage"
-                        className="text-sm md:text-base font-medium"
+                      <Label className="text-base font-medium">Category</Label>
+                      <Select
+                        onValueChange={(v) =>
+                          setForm((f) => ({ ...f, category: v }))
+                        }
                       >
-                        Cover Image Upload
-                      </Label>
-                      <div className="mt-1.5">
-                        {formData.coverImage ? (
-                          <div className="relative h-[150px] sm:h-[200px] w-full rounded-lg overflow-hidden">
-                            <img
-                              src={formData.coverImage || "/placeholder.svg"}
-                              alt="Cover image preview"
-                              className="object-cover w-full h-full"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute top-2 right-2"
-                              onClick={() =>
-                                setFormData({ ...formData, coverImage: null })
-                              }
+                        <SelectTrigger className="mt-1.5 w-full text-base md:text-lg">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent position="popper" className="w-full">
+                          {CATEGORIES.map((c) => (
+                            <SelectItem key={c.value} value={c.value}>
+                              {c.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {/* Cover Image: 좌측 정렬, 업로드 아래에 썸네일, 삭제는 빨간 X */}
+                    <div className="pt-2">
+                      <div className="w-full md:w-[420px]">
+                        <Label className="text-base font-medium mb-2">
+                          Cover Image (up to 3)
+                        </Label>
+                        {/* 업로드 버튼 + 제출한 사진 썸네일: 한 줄에 나란히 */}
+                        <div className="flex gap-2 mt-2 items-center">
+                          {form.coverImage.length < 3 && (
+                            <label className="flex flex-col items-center justify-center border-2 border-dashed border-teal-200 rounded-xl h-24 w-24 md:h-32 md:w-32 cursor-pointer hover:bg-teal-50 transition-colors">
+                              <Upload className="h-8 w-8 text-teal-400 mb-1" />
+                              <span className="text-zinc-400 text-xs">
+                                Upload Image
+                              </span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleImageUpload}
+                              />
+                            </label>
+                          )}
+                          {form.coverImage.map((img, idx) => (
+                            <div
+                              key={idx}
+                              className="relative h-24 w-24 md:h-32 md:w-32 rounded-xl overflow-hidden group"
                             >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="border-2 border-dashed border-zinc-200 rounded-lg p-4 sm:p-6 text-center">
-                            <Upload className="h-6 w-6 sm:h-8 sm:w-8 mx-auto text-zinc-400 mb-2" />
-                            <p className="text-sm text-zinc-600 mb-2">
-                              Drag and drop an image, or click to browse
-                            </p>
-                            <p className="text-xs text-zinc-500 mb-4">
-                              Recommended size: 1200 x 600 pixels
-                            </p>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              asChild
-                              size="sm"
-                              className="mx-auto"
-                            >
-                              <label
-                                htmlFor="image-upload"
-                                className="cursor-pointer"
+                              <img
+                                src={img}
+                                alt={`cover preview ${idx + 1}`}
+                                className="object-cover w-full h-full"
+                              />
+                              <button
+                                type="button"
+                                aria-label="Remove image"
+                                className="absolute top-1 right-1 bg-red-500 rounded-full p-1 shadow hover:bg-red-600"
+                                onClick={() =>
+                                  setForm((f) => ({
+                                    ...f,
+                                    coverImage: f.coverImage.filter(
+                                      (_, i) => i !== idx
+                                    ),
+                                  }))
+                                }
                               >
-                                Select Image
-                                <input
-                                  id="image-upload"
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={handleImageUpload}
-                                />
-                              </label>
-                            </Button>
+                                <svg
+                                  className="w-4 h-4 text-white"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        {imageUploading && (
+                          <div className="text-xs text-teal-500 mt-1 animate-pulse">
+                            Uploading image...
                           </div>
                         )}
                       </div>
                     </div>
-
-                    <div>
-                      <Label
-                        htmlFor="category"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        Category
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          handleSelectChange("category", value)
-                        }
-                      >
-                        <SelectTrigger className="mt-1.5 w-full">
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent position="popper" className="w-full">
-                          <SelectItem value="creativity">Creativity</SelectItem>
-                          <SelectItem value="tech">Tech</SelectItem>
-                          <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                          <SelectItem value="social">
-                            Social Experiment
-                          </SelectItem>
-                          <SelectItem value="fitness">Fitness</SelectItem>
-                          <SelectItem value="learning">Learning</SelectItem>
-                          <SelectItem value="professional">
-                            Professional
-                          </SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="pt-4 text-center italic text-sm text-zinc-600">
-                      New here? Don't worry — a title and an image are enough to
-                      begin.
-                    </div>
                   </div>
-                )}
-
-                {/* step 2 */}
-                {currentStep === 2 && (
-                  <div className="space-y-6">
+                  <Button
+                    className="w-full mt-8 bg-teal-500 hover:bg-teal-600 text-white rounded-full text-lg py-3 transition-all disabled:opacity-50 md:mt-8"
+                    disabled={!canProceed}
+                    onClick={() => setStep(2)}
+                  >
+                    Start challenge
+                  </Button>
+                </div>
+              </div>
+            )}
+            {/* Step 2: story */}
+            {step === 2 && (
+              <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-stretch">
+                {/* Main Q&A */}
+                <div className="flex-1 min-w-0 w-full max-w-none md:max-w-xl mx-auto">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-teal-500 font-bold text-base md:text-lg">
+                      Step 2
+                    </span>
+                    <span className="text-zinc-400 text-base md:text-lg">
+                      / 2
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden mb-4">
                     <div
-                      className={`p-4 rounded-lg ${currentStepInfo.lightBg} mb-6`}
+                      className="h-full bg-amber-400 transition-all duration-500 rounded-full"
+                      style={{
+                        width: `${
+                          ((storyIdx + 1) / STORY_QUESTIONS.length) * 100
+                        }%`,
+                      }}
+                    />
+                  </div>
+                  <div className="mb-4 text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <span className="text-2xl md:text-3xl">
+                      {STORY_QUESTIONS[storyIdx].emoji}
+                    </span>
+                    {STORY_QUESTIONS[storyIdx].question}
+                  </div>
+                  <Input
+                    value={form.story[storyIdx]}
+                    onChange={(e) => handleStoryChange(e.target.value)}
+                    placeholder={STORY_QUESTIONS[storyIdx].placeholder}
+                    className="mb-2 text-base md:text-lg"
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={handleSkip}
+                      disabled={storyIdx === STORY_QUESTIONS.length - 1}
                     >
-                      <h2
-                        className={`text-xl sm:text-2xl font-bold ${currentStepInfo.textColor} mb-2`}
-                      >
-                        Step 2: Your Story
-                      </h2>
-                      <p className="text-sm text-zinc-600">
-                        Draw out personal motivation and emotional connection.
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="motivation"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        Why are you doing this challege?
-                      </Label>
-                      <Textarea
-                        id="motivation"
-                        name="motivation"
-                        value={formData.motivation}
-                        onChange={handleChange}
-                        placeholder="Share what inspired you to take on this challenge..."
-                        className="mt-1.5"
-                        rows={4}
-                      />
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="worthTrying"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        What makes this worth trying, even if you might fail?
-                      </Label>
-                      <Textarea
-                        id="worthTrying"
-                        name="worthTrying"
-                        value={formData.worthTrying}
-                        onChange={handleChange}
-                        placeholder="Explain why this challenge matters to you regardless of the outcome..."
-                        className="mt-1.5"
-                        rows={4}
-                      />
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="hopeToGain"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        What do you hope to gain by the end?
-                      </Label>
-                      <Textarea
-                        id="hopeToGain"
-                        name="hopeToGain"
-                        value={formData.hopeToGain}
-                        onChange={handleChange}
-                        placeholder="Describe what success looks like for you in this challenge..."
-                        className="mt-1.5"
-                        rows={4}
-                      />
-                    </div>
-
-                    <div className="pt-4 text-center italic text-sm text-zinc-600">
-                      We care more about your why than your win.
-                      <br />
-                      If it matters to you, that's enough.
-                    </div>
-                  </div>
-                )}
-
-                {/* step 3 */}
-                {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <div
-                      className={`p-4 rounded-lg ${currentStepInfo.lightBg} mb-6`}
+                      Skip
+                    </Button>
+                    <Button
+                      className="rounded-full bg-amber-400 hover:bg-amber-500 text-white"
+                      onClick={handleNextStory}
                     >
-                      <h2
-                        className={`text-xl sm:text-2xl font-bold ${currentStepInfo.textColor} mb-2`}
-                      >
-                        Step 3: Support & Resources
-                      </h2>
-                      <p className="text-sm text-zinc-600">
-                        Help users communicate needs clearly and honestly.
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="resources"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        What resources or materials will you need?
-                      </Label>
-                      <Textarea
-                        id="resources"
-                        name="resources"
-                        value={formData.resources}
-                        onChange={handleChange}
-                        placeholder="List any tools, materials, or resources you'll need for this challenge..."
-                        className="mt-1.5"
-                        rows={4}
-                      />
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="supportUsage"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        If you receive support, how will it be used?
-                      </Label>
-                      <Textarea
-                        id="supportUsage"
-                        name="supportUsage"
-                        value={formData.supportUsage}
-                        onChange={handleChange}
-                        placeholder="Explain how any financial or material support will help you in this challenge..."
-                        className="mt-1.5"
-                        rows={4}
-                      />
-                    </div>
-
-                    <div>
-                      <Label
-                        htmlFor="additionalInfo"
-                        className="text-sm md:text-base font-medium"
-                      >
-                        Is there anything you'd like people to know as they
-                        cheer you on?
-                      </Label>
-                      <Textarea
-                        id="additionalInfo"
-                        name="additionalInfo"
-                        value={formData.additionalInfo}
-                        onChange={handleChange}
-                        placeholder="Share any additional context that would help supporters understand your journey..."
-                        className="mt-1.5"
-                        rows={4}
-                      />
-                    </div>
-
-                    <div className="pt-4 text-center italic text-sm text-zinc-600">
-                      People don't support perfection - they support sincerity.
-                      <br />
-                      Help others understand why this journey matters.
-                    </div>
+                      {storyIdx === STORY_QUESTIONS.length - 1
+                        ? "Let's do this!"
+                        : "Next"}
+                    </Button>
                   </div>
-                )}
-
-                {/* step 4 */}
-                {currentStep === 4 && (
-                  <div className="space-y-6">
-                    <div
-                      className={`p-4 rounded-lg ${currentStepInfo.lightBg} mb-6`}
-                    >
-                      <h2
-                        className={`text-xl sm:text-2xl font-bold ${currentStepInfo.textColor} mb-2`}
-                      >
-                        Step 4: Preview & Launch
-                      </h2>
-                      <p className="text-sm text-zinc-600">
-                        Final review before sharing with the world.
-                      </p>
-                    </div>
-
-                    {/* 미리보기 */}
-                    <div className="space-y-8">
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-blue-50 px-4 py-3 flex justify-between items-center">
-                          <h3 className="font-medium text-blue-700">
-                            Challenge Basics
-                          </h3>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => goToStep(1)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-100"
-                          >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
-                        </div>
-                        <div className="p-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Title
-                              </p>
-                              <p className="font-medium">
-                                {formData.title || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Duration
-                              </p>
-                              <p className="font-medium">
-                                {formData.duration === "custom"
-                                  ? formData.customDuration ||
-                                    "Custom (not specified)"
-                                  : formData.duration || "Not selected"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Category
-                              </p>
-                              <p className="font-medium">
-                                {formData.duration === "custom"
-                                  ? formData.customDuration ||
-                                    "Custom (not specified)"
-                                  : formData.duration || "Not selected"}
-                              </p>
-                            </div>
-                            <div className="md:col-span-2">
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Cover Image
-                              </p>
-                              {formData.coverImage ? (
-                                <div className="relative h-[120px] w-full md:w-1/2 rounded-lg overflow-hidden">
-                                  <img
-                                    src={
-                                      formData.coverImage || "/placeholder.svg"
-                                    }
-                                    alt="Cover image preview"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                              ) : (
-                                <p className="text-zinc-600 italic">
-                                  No image uploaded
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Story Preview */}
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-amber-50 px-4 py-3 flex justify-between items-center">
-                          <h3 className="font-medium text-amber-700">
-                            Your Story
-                          </h3>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => goToStep(2)}
-                            className="text-amber-600 hover:text-amber-800 hover:bg-amber-100"
-                          >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
-                        </div>
-                        <div className="p-4">
-                          <div className="space-y-4">
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Why are you doing this challenge?
-                              </p>
-                              <p className="text-zinc-700">
-                                {formData.motivation || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                What makes this worth trying?
-                              </p>
-                              <p className="text-zinc-700">
-                                {formData.worthTrying || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                What do you hope to gain?
-                              </p>
-                              <p className="text-zinc-700">
-                                {formData.hopeToGain || "Not provided"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Support & Resources Preview */}
-                      <div className="border rounded-lg overflow-hidden">
-                        <div className="bg-emerald-50 px-4 py-3 flex justify-between items-center">
-                          <h3 className="font-medium text-emerald-700">
-                            Support & Resources
-                          </h3>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => goToStep(3)}
-                            className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-100"
-                          >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
-                        </div>
-                        <div className="p-4">
-                          <div className="space-y-4">
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Resources or materials needed
-                              </p>
-                              <p className="text-zinc-700">
-                                {formData.resources || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                How support will be used
-                              </p>
-                              <p className="text-zinc-700">
-                                {formData.supportUsage || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-zinc-500 mb-1">
-                                Additional information for supporters
-                              </p>
-                              <p className="text-zinc-700">
-                                {formData.additionalInfo || "Not provided"}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 text-center italic text-sm text-zinc-600 mb-6">
-                      Perfect or not, you're already doing something bold.
-                      <br />
-                      Let's launch this — we're with you.
-                    </div>
-                  </div>
-                )}
-
-                {/* 버튼 */}
-                <div className="pt-6 border-t border-zinc-100">
-                  {/* 모바일 */}
-                  <div className="flex flex-col gap-3 sm:hidden">
-                    {currentStep === 4 ? (
-                      <Button
-                        type="submit"
-                        className="bg-purple-500 hover:bg-purple-600 text-white w-full"
-                      >
-                        <Rocket className="h-4 w-4 mr-2" />
-                        Launch Challenge
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        className={`${currentStepInfo.color} hover:opacity-90 text-white w-full`}
-                        onClick={nextStep}
-                      >
-                        Next Step
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* 데스크탑 */}
-                  <div className="hidden sm:flex justify-between">
-                    {currentStep > 1 ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={prevStep}
-                      >
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Previous Step
-                      </Button>
-                    ) : (
-                      <div></div>
-                    )}
-
-                    {currentStep < 4 ? (
-                      <Button
-                        type="button"
-                        className={`${currentStepInfo.color} hover:opacity-90 text-white`}
-                        onClick={nextStep}
-                      >
-                        Next Step
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        className="bg-purple-500 hover:bg-purple-600 text-white"
-                      >
-                        <Rocket className="h-4 w-4 mr-2" />
-                        Launch Challenge
-                      </Button>
-                    )}
+                  <div className="mt-4 text-teal-500 text-sm md:text-base animate-fade-in">
+                    {storyIdx === 0 && "Nice! Just one more if you like."}
+                    {storyIdx === 1 && "Awesome! Last question 🚀"}
+                    {storyIdx === 2 &&
+                      "Thank you! Ready to launch your challenge?"}
                   </div>
                 </div>
-              </form>
-            </CardContent>
-          </Card>
-        </section>
+                {/* Sidebar (PC) */}
+                <aside className="hidden md:block w-[420px] bg-zinc-50 border-l border-zinc-100 rounded-xl p-8 text-sm text-zinc-600 shadow-sm animate-fade-in self-stretch">
+                  <div className="font-bold mb-2 text-zinc-800 text-lg">
+                    Why story matters
+                  </div>
+                  <ul className="list-disc pl-4 space-y-1">
+                    <li>Challenges with a story get 2x more support!</li>
+                    <li>Honest stories inspire more encouragement</li>
+                    <li>Even failures are celebrated here!</li>
+                  </ul>
+                  <div className="mt-4 text-xs text-zinc-400">
+                    Be yourself and share as much as you want.
+                  </div>
+                </aside>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </main>
       <Footer />
     </div>
