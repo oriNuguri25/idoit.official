@@ -59,6 +59,10 @@ export default async function handler(req, res) {
         fields["story[2]"],
       ];
 
+      const safeUserId = Array.isArray(fields.user_id)
+        ? fields.user_id[0]
+        : fields.user_id;
+
       const uploadedUrls: string[] = [];
 
       // files.images가 존재하는지 확인
@@ -94,7 +98,7 @@ export default async function handler(req, res) {
       }
 
       const { error: insertError } = await supabase.from("challenges").insert({
-        user_id,
+        user_id: safeUserId,
         title,
         duration,
         category,
