@@ -98,7 +98,7 @@ export default async function handler(req, res) {
         title,
         duration,
         category,
-        cover_images: uploadedUrls,
+        cover_image: uploadedUrls,
         story,
       });
 
