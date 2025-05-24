@@ -11,4 +11,25 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://idoit-official.vercel.app",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+        configure: (proxy) => {
+          proxy.on("error", (err) => {
+            console.log("프록시 오류: ", err);
+          });
+          proxy.on("proxyReq", (proxyReq, req) => {
+            console.log("프록시 요청: ", req.url);
+          });
+          proxy.on("proxyRes", (proxyRes) => {
+            console.log("프록시 응답: ", proxyRes.statusCode);
+          });
+        },
+      },
+    },
+  },
 });
