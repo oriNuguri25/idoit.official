@@ -22,7 +22,7 @@ export default defineConfig({
           proxy.on("error", (err) => {
             console.log("프록시 오류: ", err);
           });
-          proxy.on("proxyReq", (proxyReq, req) => {
+          proxy.on("proxyReq", (_proxyReq, req) => {
             console.log("프록시 요청: ", req.url);
           });
           proxy.on("proxyRes", (proxyRes) => {
