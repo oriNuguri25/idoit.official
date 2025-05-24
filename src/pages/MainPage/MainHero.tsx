@@ -2,6 +2,7 @@ import { ProgressCircle } from "@/components/ProgressCircle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, Lightbulb, PlusCircle, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const MainHero = () => (
   <section className="relative bg-gradient-to-br from-purple-900 via-violet-800 to-indigo-900 text-white">
@@ -27,12 +28,14 @@ const MainHero = () => (
             destination, and learning through failure is celebrated.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button
-              size="lg"
-              className="bg-teal-500 hover:bg-teal-600 text-white border-0"
-            >
-              Start your journey
-            </Button>
+            <Link to="/create">
+              <Button
+                size="lg"
+                className="bg-teal-500 hover:bg-teal-600 text-white border-0 cursor-pointer"
+              >
+                Start your journey
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"

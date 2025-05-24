@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/select";
 import { Upload } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useSubmitChallenge } from "@/hooks/useSubmitChallenge";
 
 const STORY_QUESTIONS = [
   {
@@ -57,20 +59,26 @@ export default function CreateMain() {
   });
   const [storyIdx, setStoryIdx] = useState(0);
   const [imageUploading, setImageUploading] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customDuration, setCustomDuration] = useState("");
+  const [imageIdx, setImageIdx] = useState(0);
+  const { user } = useAuth();
+  const submitChallenge = useSubmitChallenge();
+  const navegate = useNavigate();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file && imageFiles.length < 3) {
       setImageUploading(true);
+
+      setImageFiles((prev) => [...prev, file]);
       const reader = new FileReader();
       reader.onload = (e) => {
         setForm((prev) => ({
           ...prev,
-          coverImage:
-            prev.coverImage.length < 3 && e.target?.result
-              ? [...prev.coverImage, e.target.result as string]
-              : prev.coverImage,
+          coverImage: [...prev.coverImage, e.target?.result as string],
         }));
         setImageUploading(false);
       };
@@ -98,9 +106,34 @@ export default function CreateMain() {
   };
 
   // Step2 next
-  const handleNextStory = () => {
+  const handleNextStory = async () => {
     if (storyIdx < STORY_QUESTIONS.length - 1) setStoryIdx(storyIdx + 1);
-    else setSubmitted(true);
+    else {
+      if (isSubmitting || submitChallenge.isPending) return;
+      try {
+        setIsSubmitting(true);
+        await submitChallenge.mutateAsync(
+          {
+            user_id: user!.id,
+            title: form.title,
+            duration: form.duration,
+            category: form.category,
+            coverImages: imageFiles,
+            story: form.story,
+          },
+          {
+            onSuccess: () => {
+              navegate("/");
+            },
+          }
+        );
+        setSubmitted(true);
+      } catch (e: any) {
+        console.log("Failed to submit challenge: " + e.message);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
   };
 
   // Step1 complete condition
@@ -109,75 +142,88 @@ export default function CreateMain() {
 
   // After submit: preview/share
   if (submitted) {
+    if (imageIdx >= form.coverImage.length) setImageIdx(0);
     return (
       <div className="flex min-h-screen flex-col bg-gradient-to-b from-teal-50 to-zinc-50">
         <main className="flex-1 flex flex-col items-center justify-center">
           <Card className="w-full max-w-none md:max-w-[700px] mx-auto border-0 shadow-2xl rounded-3xl p-4 md:p-12 text-center animate-fade-in bg-white/90">
-            <div className="flex flex-col md:flex-row gap-8 items-center md:items-stretch">
-              {/* 이미지: 왼쪽(PC) / 상단(모바일) */}
-              <div className="flex-shrink-0 w-full md:w-72 flex justify-center items-center">
-                <div className="w-full flex justify-center items-center gap-2 flex-wrap">
-                  {form.coverImage.length > 0 ? (
-                    form.coverImage.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt={`cover ${idx + 1}`}
-                        className="aspect-square w-full md:w-80 max-w-xs h-auto object-cover rounded-2xl border-4 border-teal-100 shadow-lg"
-                      />
-                    ))
-                  ) : (
-                    <img
-                      src="/placeholder.svg"
-                      alt="cover"
-                      className="aspect-square w-full md:w-80 max-w-xs h-auto object-cover rounded-2xl border-4 border-teal-100 shadow-lg"
-                    />
-                  )}
-                </div>
+            <div className="flex flex-col items-center justify-center gap-4">
+              {/* 축하 메시지 복원 */}
+              <span className="text-5xl md:text-6xl mb-2">🎉</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-1 text-teal-600 drop-shadow">
+                Challenge Submitted!
+              </h2>
+              <p className="mb-2 text-zinc-600 text-base md:text-lg">
+                Your journey starts now. The Idoit community is cheering for
+                you!
+              </p>
+              {/* 이미지: 중앙 정렬, 여러 장도 자연스럽게 나열 + 슬라이드 */}
+              <div className="flex flex-row justify-center items-center gap-2 w-auto mb-1">
+                {form.coverImage.length > 1 && (
+                  <button
+                    className="px-2 py-1 text-2xl text-teal-400 hover:text-teal-600 disabled:text-zinc-200"
+                    onClick={() => setImageIdx((prev) => prev - 1)}
+                    disabled={imageIdx === 0}
+                    aria-label="Previous image"
+                  >
+                    &#60;
+                  </button>
+                )}
+                {form.coverImage.length > 0 ? (
+                  <img
+                    src={form.coverImage[imageIdx]}
+                    alt={`cover ${imageIdx + 1}`}
+                    className="aspect-square w-40 md:w-60 max-w-xs h-auto object-cover rounded-2xl border-4 border-teal-100 shadow-lg"
+                  />
+                ) : (
+                  <img
+                    src="/placeholder.svg"
+                    alt="cover"
+                    className="aspect-square w-40 md:w-60 max-w-xs h-auto object-cover rounded-2xl border-4 border-teal-100 shadow-lg"
+                  />
+                )}
+                {form.coverImage.length > 1 && (
+                  <button
+                    className="px-2 py-1 text-2xl text-teal-400 hover:text-teal-600 disabled:text-zinc-200"
+                    onClick={() => setImageIdx((prev) => prev + 1)}
+                    disabled={imageIdx === form.coverImage.length - 1}
+                    aria-label="Next image"
+                  >
+                    &#62;
+                  </button>
+                )}
               </div>
-              {/* 정보/메시지/버튼: 오른쪽(PC) / 하단(모바일) */}
-              <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
-                <span className="text-5xl md:text-6xl mb-2">🎉</span>
-                <h2 className="text-2xl md:text-3xl font-extrabold mb-1 text-teal-600 drop-shadow">
-                  Challenge Submitted!
-                </h2>
-                <p className="mb-2 text-zinc-600 text-base md:text-lg">
-                  Your journey starts now. The Idoit community is cheering for
-                  you!
-                </p>
-                <div className="mb-4 mt-2">
-                  <span className="font-bold text-xl md:text-2xl text-zinc-800">
-                    {form.title}
-                  </span>
-                  <span className="text-zinc-500 ml-2">
-                    ({form.duration},{" "}
-                    {CATEGORIES.find((c) => c.value === form.category)?.label})
-                  </span>
-                </div>
-                <ul className="mb-6 text-left text-zinc-700 w-full max-w-none md:max-w-md mx-auto">
-                  {form.story.map(
-                    (s, i) =>
-                      s && (
-                        <li
-                          key={i}
-                          className="mb-1 text-base md:text-lg flex items-center gap-2"
-                        >
-                          <span>{STORY_QUESTIONS[i].emoji}</span>{" "}
-                          <span>{s}</span>
-                        </li>
-                      )
-                  )}
-                </ul>
-                <div className="mb-6 text-teal-500 font-semibold text-lg md:text-xl animate-fade-in">
-                  You did it! Ready for your next adventure?
-                </div>
-                <Button
-                  className="w-full max-w-xs mx-auto bg-teal-500 hover:bg-teal-600 text-white rounded-full text-lg py-3 shadow-lg transition-all"
-                  onClick={() => (window.location.href = "/")}
-                >
-                  Back to Home
-                </Button>
+              <div className="mt-2">
+                <span className="font-bold text-xl md:text-2xl text-zinc-800">
+                  {form.title}
+                </span>
               </div>
+              <div className="text-zinc-500">
+                ({form.duration},{" "}
+                {CATEGORIES.find((c) => c.value === form.category)?.label})
+              </div>
+              <ul className="text-zinc-700 w-full max-w-none md:max-w-md mx-auto text-center">
+                {form.story.map(
+                  (s, i) =>
+                    s && (
+                      <li
+                        key={i}
+                        className="mb-1 text-base md:text-lg flex items-center gap-2 justify-center"
+                      >
+                        <span>{STORY_QUESTIONS[i].emoji}</span> <span>{s}</span>
+                      </li>
+                    )
+                )}
+              </ul>
+              <div className="mb-6 text-teal-500 font-semibold text-lg md:text-xl animate-fade-in">
+                You did it! Ready for your next adventure?
+              </div>
+              <Button
+                className="w-full max-w-xs mx-auto bg-teal-500 hover:bg-teal-600 text-white rounded-full text-lg py-3 shadow-lg transition-all cursor-pointer"
+                onClick={() => (window.location.href = "/")}
+              >
+                Back to Home
+              </Button>
             </div>
           </Card>
         </main>
@@ -194,6 +240,16 @@ export default function CreateMain() {
           <Link
             to="/"
             className="inline-flex items-center text-zinc-600 hover:text-teal-600 transition-colors text-sm md:text-base"
+            onClick={
+              step === 2
+                ? (e) => {
+                    const ok = window.confirm(
+                      "Are you sure you want to leave? Your progress will be lost."
+                    );
+                    if (!ok) e.preventDefault();
+                  }
+                : undefined
+            }
           >
             <svg
               className="h-4 w-4 mr-1"
@@ -237,7 +293,7 @@ export default function CreateMain() {
                       Start a Challenge
                     </h2>
                     <p className="text-zinc-500 text-sm md:text-base">
-                      Don't hesitate—just start!
+                      Don't hesitate just start!
                     </p>
                   </div>
                   <div className="space-y-4">
@@ -258,8 +314,20 @@ export default function CreateMain() {
                     <div>
                       <Label className="text-base font-medium">Duration</Label>
                       <Select
-                        onValueChange={(v) =>
-                          setForm((f) => ({ ...f, duration: v }))
+                        onValueChange={(v) => {
+                          if (v === "custom") {
+                            setForm((f) => ({ ...f, duration: "custom" }));
+                          } else {
+                            setForm((f) => ({ ...f, duration: v }));
+                            setCustomDuration("");
+                          }
+                        }}
+                        value={
+                          ["1 week", "2 weeks", "1 month", "custom"].includes(
+                            form.duration
+                          )
+                            ? form.duration
+                            : ""
                         }
                       >
                         <SelectTrigger className="mt-1.5 w-full text-base md:text-lg">
@@ -269,8 +337,19 @@ export default function CreateMain() {
                           <SelectItem value="1 week">1 week</SelectItem>
                           <SelectItem value="2 weeks">2 weeks</SelectItem>
                           <SelectItem value="1 month">1 month</SelectItem>
+                          <SelectItem value="custom">Custom</SelectItem>
                         </SelectContent>
                       </Select>
+                      {form.duration === "custom" && (
+                        <Input
+                          className="mt-2 text-base md:text-lg"
+                          placeholder="Enter custom duration (e.g. 10 days, 3 months)"
+                          value={customDuration}
+                          onChange={(e) => {
+                            setCustomDuration(e.target.value);
+                          }}
+                        />
+                      )}
                     </div>
                     <div>
                       <Label className="text-base font-medium">Category</Label>
@@ -362,9 +441,16 @@ export default function CreateMain() {
                     </div>
                   </div>
                   <Button
-                    className="w-full mt-8 bg-teal-500 hover:bg-teal-600 text-white rounded-full text-lg py-3 transition-all disabled:opacity-50 md:mt-8"
+                    className="w-full mt-8 bg-teal-500 hover:bg-teal-600 text-white rounded-full text-lg py-3 transition-all disabled:opacity-50 md:mt-8 cursor-pointer"
                     disabled={!canProceed}
-                    onClick={() => setStep(2)}
+                    onClick={() => {
+                      if (form.duration === "custom") {
+                        setForm((f) => ({ ...f, duration: customDuration }));
+                        setStep(2);
+                      } else {
+                        setStep(2);
+                      }
+                    }}
                   >
                     Start challenge
                   </Button>
@@ -380,8 +466,10 @@ export default function CreateMain() {
                     <span className="text-teal-500 font-bold text-base md:text-lg">
                       Step 2
                     </span>
-                    <span className="text-zinc-400 text-base md:text-lg">
-                      / 2
+                  </div>
+                  <div className="mb-1 text-left w-full">
+                    <span className="font-bold text-base md:text-lg">
+                      {storyIdx + 1} / {STORY_QUESTIONS.length}
                     </span>
                   </div>
                   <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden mb-4">
@@ -407,23 +495,40 @@ export default function CreateMain() {
                     className="mb-2 text-base md:text-lg"
                   />
                   <div className="flex gap-2 mt-2">
+                    {storyIdx > 0 && (
+                      <Button
+                        variant="outline"
+                        className="rounded-full border-zinc-300 text-zinc-500 hover:bg-zinc-100"
+                        onClick={() => setStoryIdx(storyIdx - 1)}
+                      >
+                        Back
+                      </Button>
+                    )}
+                    <Button
+                      className="rounded-full bg-amber-400 hover:bg-amber-500 text-white cursor-pointer"
+                      onClick={handleNextStory}
+                    >
+                      {storyIdx === STORY_QUESTIONS.length - 1
+                        ? "Create Challenge!"
+                        : "Next"}
+                    </Button>
                     <Button
                       variant="outline"
-                      className="rounded-full"
+                      className="rounded-full border-zinc-300 text-zinc-500 hover:bg-zinc-100 ml-auto"
                       onClick={handleSkip}
                       disabled={storyIdx === STORY_QUESTIONS.length - 1}
                     >
                       Skip
                     </Button>
-                    <Button
-                      className="rounded-full bg-amber-400 hover:bg-amber-500 text-white"
-                      onClick={handleNextStory}
-                    >
-                      {storyIdx === STORY_QUESTIONS.length - 1
-                        ? "Let's do this!"
-                        : "Next"}
-                    </Button>
                   </div>
+                  {/* Step1로 돌아가기 버튼 */}
+                  <Button
+                    variant="ghost"
+                    className="mt-4 text-zinc-500 hover:text-teal-600 underline"
+                    onClick={() => setStep(1)}
+                  >
+                    ← Back to Step 1
+                  </Button>
                   <div className="mt-4 text-teal-500 text-sm md:text-base animate-fade-in">
                     {storyIdx === 0 && "Nice! Just one more if you like."}
                     {storyIdx === 1 && "Awesome! Last question 🚀"}
@@ -432,16 +537,44 @@ export default function CreateMain() {
                   </div>
                 </div>
                 {/* Sidebar (PC) */}
-                <aside className="hidden md:block w-[420px] bg-zinc-50 border-l border-zinc-100 rounded-xl p-8 text-sm text-zinc-600 shadow-sm animate-fade-in self-stretch">
-                  <div className="font-bold mb-2 text-zinc-800 text-lg">
-                    Why story matters
+                <aside className="md:block w-[420px] bg-gradient-to-br from-teal-50 via-white to-zinc-100 border-l border-zinc-100 rounded-2xl p-8 text-base text-zinc-700 shadow-xl animate-fade-in self-stretch flex flex-col items-start gap-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">💬</span>
+                    <span className="font-extrabold text-lg text-teal-700 drop-shadow">
+                      Why story matters
+                    </span>
                   </div>
-                  <ul className="list-disc pl-4 space-y-1">
-                    <li>Challenges with a story get 2x more support!</li>
-                    <li>Honest stories inspire more encouragement</li>
-                    <li>Even failures are celebrated here!</li>
+                  <ul className="list-none pl-0 space-y-3 w-full">
+                    <li className="flex items-center gap-2">
+                      <span className="text-lg">🌱</span>{" "}
+                      <span>
+                        Challenges with a story get{" "}
+                        <span className="font-bold text-teal-600">
+                          2x more support!
+                        </span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-lg">💡</span>{" "}
+                      <span>
+                        Honest stories inspire{" "}
+                        <span className="font-bold text-amber-600">
+                          more encouragement
+                        </span>
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-lg">🎉</span>{" "}
+                      <span>
+                        Even{" "}
+                        <span className="font-bold text-fuchsia-600">
+                          failures are celebrated
+                        </span>{" "}
+                        here!
+                      </span>
+                    </li>
                   </ul>
-                  <div className="mt-4 text-xs text-zinc-400">
+                  <div className="mt-4 text-xs text-teal-500 font-semibold bg-teal-50 rounded-xl px-4 py-2 w-full text-center shadow-sm">
                     Be yourself and share as much as you want.
                   </div>
                 </aside>

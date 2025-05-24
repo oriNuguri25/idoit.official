@@ -96,7 +96,7 @@ const Header = () => {
           {user ? (
             <Button
               variant="ghost"
-              className="hidden md:inline-flex"
+              className="hidden md:inline-flex cursor-pointer"
               onClick={handleSignOut}
             >
               Sign out
@@ -104,7 +104,7 @@ const Header = () => {
           ) : (
             <Button
               variant="ghost"
-              className="hidden md:inline-flex"
+              className="hidden md:inline-flex cursor-pointer"
               onClick={() => setLoginOpen(true)}
             >
               Sign in
@@ -114,13 +114,13 @@ const Header = () => {
           {/* 도전 시작 버튼 */}
           {user ? (
             <Link to="/create">
-              <Button className="hidden md:inline-flex bg-teal-500 hover:bg-teal-600 text-white border-0">
+              <Button className="hidden md:inline-flex bg-teal-500 hover:bg-teal-600 text-white border-0 cursor-pointer">
                 Start your journey
               </Button>
             </Link>
           ) : (
             <Button
-              className="hidden md:inline-flex bg-teal-500 hover:bg-teal-600 text-white border-0"
+              className="hidden md:inline-flex bg-teal-500 hover:bg-teal-600 text-white border-0 cursor-pointer"
               onClick={() => setLoginOpen(true)}
             >
               Start your journey
