@@ -35,6 +35,12 @@ export default async function handler(req, res) {
   const form = formidable({ multiples: true });
 
   form.parse(req, async (err, fields, files) => {
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
     if (err) return res.status(500).json({ error: "Form parsing failed" });
 
     const { user_id, title, duration, category } = fields;
@@ -50,7 +56,7 @@ export default async function handler(req, res) {
       const buffer = fs.readFileSync(file.filepath);
 
       const { error } = await supabase.storage
-        .from("challengeimages")
+        .from("challengeimage")
         .upload(filePath, buffer, { contentType: file.mimetype });
 
       if (error) return res.status(500).json({ error });

@@ -9,20 +9,6 @@ export type ChallengeForm = {
   story: string[];
 };
 
-export async function saveChallengeToSupabase(form: ChallengeForm) {
-  const { error } = await supabase.from("challenges").insert([
-    {
-      user_id: form.user_id,
-      title: form.title,
-      duration: form.duration,
-      category: form.category,
-      cover_image: form.cover_image,
-      story: form.story,
-    },
-  ]);
-  return error;
-}
-
 export async function uploadImagesToStorage(files: File[], userId: string) {
   const urls: string[] = [];
   for (const file of files) {
