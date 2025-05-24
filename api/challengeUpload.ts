@@ -7,12 +7,6 @@ const supabaseSeviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(supabaseURL!, supabaseSeviceRole!);
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 const allowedOrigins = [
   "http://localhost:5173",
   "https://idoit-official.vercel.app",
