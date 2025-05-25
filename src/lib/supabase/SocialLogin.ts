@@ -5,7 +5,9 @@ export const SocialLogin = async (provider: "google" | "apple") => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `http://localhost:5173/auth?redirect=${currentPath}`,
+      redirectTo: `${
+        import.meta.env.VITE_BASE_URL
+      }/auth?redirect=${currentPath}`,
     },
   });
   if (error) {
