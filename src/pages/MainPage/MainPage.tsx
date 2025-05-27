@@ -7,8 +7,18 @@ import ThirdBlock from "./ThirdBlock";
 import FourthBlock from "./FourthBlock";
 import FifthBlock from "./FifthBlock";
 import MobileButton from "./MobileButton";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
-const MainPage = () => {
+export default function MainPage() {
+  useEffect(() => {
+    if (localStorage.getItem("showSuccessToast") === "1") {
+      toast.success("Your challenge has been successfully submitted!", {
+        position: "bottom-right",
+      });
+      localStorage.removeItem("showSuccessToast");
+    }
+  }, []);
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50">
       <Header />
@@ -25,6 +35,4 @@ const MainPage = () => {
       <MobileButton />
     </div>
   );
-};
-
-export default MainPage;
+}

@@ -124,10 +124,8 @@ export default function CreateMain() {
           },
           {
             onSuccess: () => {
+              localStorage.setItem("successToast", "1");
               navigate("/", { replace: true });
-              toast.success("Your challenge has been successfully submitted!", {
-                position: "bottom-right",
-              });
             },
             onError: () => {
               toast.error("Failed to submit challenge", {
