@@ -15,6 +15,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useSubmitChallenge } from "@/hooks/useSubmitChallenge";
+import { toast } from "sonner";
 
 const STORY_QUESTIONS = [
   {
@@ -66,7 +67,7 @@ export default function CreateMain() {
   const [imageIdx, setImageIdx] = useState(0);
   const { user } = useAuth();
   const submitChallenge = useSubmitChallenge();
-  const navegate = useNavigate();
+  const navigate = useNavigate();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -123,7 +124,15 @@ export default function CreateMain() {
           },
           {
             onSuccess: () => {
-              navegate("/");
+              navigate("/", { replace: true });
+              toast.success("Your challenge has been successfully submitted!", {
+                position: "bottom-right",
+              });
+            },
+            onError: () => {
+              toast.error("Failed to submit challenge", {
+                position: "bottom-right",
+              });
             },
           }
         );
