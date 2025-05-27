@@ -44,7 +44,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
           {/* 소셜 로그인 버튼 */}
           <div className="w-full flex flex-col gap-3 mt-2">
             <button
-              className="w-full flex items-center gap-3 border border-zinc-300 rounded-xl bg-white hover:bg-zinc-50 transition-colors py-3 px-4 text-base font-semibold text-zinc-800 shadow-sm"
+              className="w-full flex items-center gap-3 border border-zinc-300 rounded-xl bg-white hover:bg-zinc-50 transition-colors py-3 px-4 text-base font-semibold text-zinc-800 shadow-sm cursor-pointer"
               onClick={() => SocialLogin("google")}
             >
               <div className="flex items-center justify-center">

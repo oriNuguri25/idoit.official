@@ -7,6 +7,7 @@ export type ChallengeForm = {
   category: string;
   cover_image: string[];
   story: string[];
+  state: "do" | "fail" | "completed";
 };
 
 export async function uploadImagesToStorage(files: File[], userId: string) {
