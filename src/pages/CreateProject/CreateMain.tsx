@@ -348,14 +348,25 @@ export default function CreateMain() {
                         </SelectContent>
                       </Select>
                       {form.duration === "custom" && (
-                        <Input
-                          className="mt-2 text-base md:text-lg"
-                          placeholder="Enter custom duration (e.g. 10 days, 3 months)"
-                          value={customDuration}
-                          onChange={(e) => {
-                            setCustomDuration(e.target.value);
-                          }}
-                        />
+                        <div className="flex items-center gap-2 mt-2">
+                          <Input
+                            type="number"
+                            min={1}
+                            className="text-base md:text-lg w-32"
+                            placeholder="Enter days"
+                            value={customDuration}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(
+                                /[^0-9]/g,
+                                ""
+                              );
+                              setCustomDuration(value);
+                            }}
+                          />
+                          <span className="text-base md:text-lg text-zinc-500">
+                            days
+                          </span>
+                        </div>
                       )}
                     </div>
                     <div>
