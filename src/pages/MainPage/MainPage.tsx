@@ -12,11 +12,11 @@ import { toast } from "sonner";
 
 export default function MainPage() {
   useEffect(() => {
-    if (localStorage.getItem("showSuccessToast") === "1") {
+    if (localStorage.getItem("successToast") === "1") {
       toast.success("Your challenge has been successfully submitted!", {
         position: "bottom-right",
       });
-      localStorage.removeItem("showSuccessToast");
+      localStorage.removeItem("successToast");
     }
   }, []);
   return (
