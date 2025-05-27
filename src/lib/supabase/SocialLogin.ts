@@ -14,8 +14,3 @@ export const SocialLogin = async (provider: "google" | "apple") => {
     console.log(error);
   }
 };
-
-// `${
-//         import.meta.env.VITE_BASE_URL
-//       }/auth?redirect=${currentPath}`
-// http://localhost:3000/?error=invalid_request&error_code=bad_oauth_state&error_description=OAuth+callback+with+invalid+state
