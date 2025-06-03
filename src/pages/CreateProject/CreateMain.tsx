@@ -53,6 +53,7 @@ export default function CreateMain() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     title: "",
+    description: "",
     duration: "",
     category: "",
     coverImage: [] as string[],
@@ -316,6 +317,22 @@ export default function CreateMain() {
                         placeholder="e.g. Learn to play one ukulele song in 2 weeks"
                         className="mt-1.5 text-base md:text-lg"
                         required
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="description"
+                        className="text-base font-medium"
+                      >
+                        Description
+                      </Label>
+                      <Input
+                        id="description"
+                        name="description"
+                        value={form.description}
+                        onChange={handleChange}
+                        placeholder="e.g. I want to learn to play one ukulele song in 2 weeks"
+                        className="mt-1.5 text-base md:text-lg"
                       />
                     </div>
                     <div>

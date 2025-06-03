@@ -3,6 +3,7 @@ import { supabase } from "./SupabaseClient";
 export type ChallengeForm = {
   user_id: string;
   title: string;
+  description: string;
   duration: string;
   category: string;
   cover_image: string[];

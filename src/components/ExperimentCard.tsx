@@ -8,9 +8,7 @@ interface ExperimentCardProps {
   title: string;
   creator: string;
   description: string;
-  donationAmount: number;
-  donationGoal: number;
-  image: string;
+  image: string[];
   category: string;
   color: string;
 }
@@ -19,23 +17,15 @@ export function ExperimentCard({
   title,
   creator,
   description,
-  donationAmount,
   image,
   category,
 }: ExperimentCardProps) {
-  const formattedDonation = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(donationAmount);
-
   return (
     <Card className="overflow-hidden transition-all hover:shadow-lg group">
       <div className="relative">
         <div className="relative h-48">
           <img
-            src={image || "/placeholder.svg"}
+            src={image && image.length > 0 ? image[0] : "/placeholder.svg"}
             alt={title}
             className="object-cover w-full h-full"
           />
@@ -44,13 +34,6 @@ export function ExperimentCard({
             <Badge className="bg-white/80 text-zinc-800 hover:bg-white/90">
               {category}
             </Badge>
-          </div>
-          <div className="absolute bottom-3 right-3">
-            <div className="bg-white/10 backdrop-blur-sm rounded-full px-3 py-2">
-              <span className="text-sm font-medium text-white">
-                ${donationAmount.toLocaleString()}
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -90,10 +73,6 @@ export function ExperimentCard({
             >
               <MessageSquare className="h-4 w-4" /> 18
             </Button>
-          </div>
-
-          <div className="text-sm font-medium text-zinc-800">
-            {formattedDonation}
           </div>
         </div>
       </CardContent>

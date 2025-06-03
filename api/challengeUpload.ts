@@ -54,10 +54,11 @@ export default async function handler(req, res) {
     try {
       const getFirst = (v) => (Array.isArray(v) ? v[0] : v);
 
-      const { user_id, title, duration, category } = fields;
+      const { user_id, title, description, duration, category } = fields;
 
       const safeUserId = getFirst(user_id);
       const safeTitle = getFirst(title);
+      const safeDescription = getFirst(description);
       const safeDuration = getFirst(duration);
       const safeCategory = getFirst(category);
 
@@ -104,6 +105,7 @@ export default async function handler(req, res) {
       const { error: insertError } = await supabase.from("challenges").insert({
         user_id: safeUserId,
         title: safeTitle,
+        description: safeDescription,
         duration: safeDuration,
         category: safeCategory,
         cover_image: uploadedUrls,
