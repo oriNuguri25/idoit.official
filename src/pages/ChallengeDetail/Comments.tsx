@@ -93,7 +93,7 @@ export function Comments({ challengeId, openLoginModal }: CommentsProps) {
       .select("id, comment, name, user_id, created_at")
       .eq("challenge_id", challengeId)
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data }) => {
         setComments(data || []);
         setLoading(false);
       });
