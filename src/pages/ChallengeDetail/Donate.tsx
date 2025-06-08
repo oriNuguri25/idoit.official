@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 interface Supporter {
   user_id: string;
   amount: number;
-  created_at: string;
+  created_at?: string;
   public_profiles?: { user_name?: string } | null;
 }
 
@@ -86,12 +86,70 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
       });
   }, [challengeId]);
 
-  const handleSupport = (amount: number) => {
+  const handleSupport = async (amount: number) => {
     if (!user && openLoginModal) {
       openLoginModal();
       return;
     }
-    alert(`Support with $${amount} (구현 필요)`);
+    if (amount === 0) {
+      alert("Custom Amount (구현 필요)");
+      return;
+    }
+    if (window.confirm(`Are you sure you want to support with $${amount}?`)) {
+      const { error } = await supabase.from("donate").insert({
+        challenge_id: challengeId,
+        user_id: user?.id,
+        amount,
+      });
+      if (error) {
+        alert("Failed to support: " + error.message);
+      } else {
+        alert("Thank you for your support!");
+        setAmountLoading(true);
+        supabase
+          .from("donate")
+          .select("amount")
+          .eq("challenge_id", challengeId)
+          .then(({ data, error }) => {
+            if (!error) {
+              const sum = (data || []).reduce(
+                (acc, row) => acc + (row.amount || 0),
+                0
+              );
+              setAmount(sum);
+            }
+            setAmountLoading(false);
+          });
+        setSupportersLoading(true);
+        supabase
+          .from("donate")
+          .select("user_id, amount, created_at, public_profiles(user_name)")
+          .eq("challenge_id", challengeId)
+          .order("created_at", { ascending: false })
+          .limit(20)
+          .then(({ data, error }) => {
+            if (!error) {
+              const seen = new Set();
+              const unique: Supporter[] = [];
+              for (const row of data || []) {
+                if (!row.user_id || seen.has(row.user_id)) continue;
+                seen.add(row.user_id);
+                unique.push({
+                  user_id: row.user_id,
+                  amount: row.amount,
+                  created_at: row.created_at,
+                  public_profiles: Array.isArray(row.public_profiles)
+                    ? row.public_profiles[0]
+                    : row.public_profiles ?? null,
+                });
+                if (unique.length >= 5) break;
+              }
+              setSupporters(unique);
+            }
+            setSupportersLoading(false);
+          });
+      }
+    }
   };
   const handleShare = () => {
     alert("Share (구현 필요)");
