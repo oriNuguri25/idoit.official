@@ -113,7 +113,7 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
       return;
     }
     if (amount === 0) {
-      alert("Custom Amount (구현 필요)");
+      alert("Custom Amount (not implemented yet)");
       return;
     }
     setPendingAmount(amount);
@@ -132,9 +132,9 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
       amount,
     });
     if (error) {
-      alert("후원에 실패했습니다: " + error.message);
+      alert("Failed to back: " + error.message);
     } else {
-      alert("후원해주셔서 감사합니다!");
+      alert("Thank you for your backing!");
       setAmountLoading(true);
       supabase
         .from("donate")
@@ -181,7 +181,7 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
   };
 
   const handleShare = () => {
-    alert("Share (구현 필요)");
+    alert("Share (not implemented yet)");
   };
 
   return (
@@ -193,9 +193,9 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
           setPendingAmount(null);
         }}
         onConfirm={handleConfirmSupport}
-        message={`정말로 $${pendingAmount ?? 0}을(를) 후원하시겠습니까?`}
-        confirmText="후원하기"
-        cancelText="취소"
+        message={`Are you sure you want to back with $${pendingAmount ?? 0}?`}
+        confirmText="Back now"
+        cancelText="Cancel"
       />
       <Card className="overflow-hidden lg:sticky lg:top-24">
         <CardContent className="p-6">
@@ -207,7 +207,7 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
                 : amountError
                 ? "-"
                 : `${amount?.toLocaleString()}`}{" "}
-              raised
+              backed
             </span>
           </div>
           {/* 100$ 기준 게이지바 */}
@@ -243,19 +243,19 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
               className="w-full bg-teal-500 hover:bg-teal-600 text-white"
               onClick={() => handleSupport(10)}
             >
-              Support with $10
+              Back with $10
             </Button>
             <Button
               className="w-full bg-teal-600 hover:bg-teal-700 text-white"
               onClick={() => handleSupport(25)}
             >
-              Support with $25
+              Back with $25
             </Button>
             <Button
               className="w-full bg-teal-700 hover:bg-teal-800 text-white"
               onClick={() => handleSupport(50)}
             >
-              Support with $50
+              Back with $50
             </Button>
             <Button
               variant="outline"
@@ -277,14 +277,14 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
           </div>
           {/* Recent Supporters Section */}
           <div className="pt-6 border-t border-zinc-100">
-            <h3 className="font-medium mb-4">Recent Supporters</h3>
+            <h3 className="font-medium mb-4">Recent Backers</h3>
             <div className="space-y-4">
               {supportersLoading ? (
                 <div className="text-zinc-400">Loading...</div>
               ) : supportersError ? (
                 <div className="text-red-500">{supportersError}</div>
               ) : supporters.length === 0 ? (
-                <div className="text-zinc-400">Be the first supporter!</div>
+                <div className="text-zinc-400">Be the first backer!</div>
               ) : (
                 supporters.map((supporter, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -315,7 +315,7 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
               size="sm"
               className="w-full mt-4 text-teal-600 hover:text-teal-700"
             >
-              See all supporters
+              See all backers
             </Button>
           </div>
         </CardContent>
