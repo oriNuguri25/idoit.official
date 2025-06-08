@@ -1,9 +1,36 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { supabase } from "@/lib/supabase/SupabaseClient";
+import { useEffect, useState } from "react";
+import { FailCard } from "@/components/FailCard";
 
 const ThirdBlock = () => {
+  const [failures, setFailures] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFailures = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("challenges")
+        .select("*")
+        .eq("state", "fail")
+        .order("created_at", { ascending: false })
+        .limit(4);
+      if (error) {
+        setError(error.message);
+        setFailures([]);
+      } else {
+        setFailures(data || []);
+        setError(null);
+      }
+      setLoading(false);
+    };
+    fetchFailures();
+  }, []);
+
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="max-w-[1400px] mx-auto px-3">
@@ -20,84 +47,21 @@ const ThirdBlock = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[200px] gap-4">
-          <div className="relative col-span-2 row-span-2 group overflow-hidden rounded-2xl">
-            <img
-              src="/placeholder.svg?height=400&width=600"
-              alt="Failure example"
-              className="object-cover w-full h-full transition-transform group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 flex flex-col justify-end">
-              <Badge className="self-start mb-2 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm">
-                Marathon Training
-              </Badge>
-              <h3 className="text-xl font-bold text-white mb-1">
-                How I Failed My First Marathon
-              </h3>
-              <p className="text-white/80 text-sm mb-2">
-                What I learned about pacing, nutrition, and listening to my
-                body.
-              </p>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6 border border-white/20">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>RN</AvatarFallback>
-                </Avatar>
-                <span className="text-xs text-white/80">
-                  @runner_in_progress
-                </span>
-              </div>
-            </div>
+        {loading ? (
+          <div className="text-center py-12 text-zinc-400">Loading...</div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-500">{error}</div>
+        ) : failures.length === 0 ? (
+          <div className="text-center py-12 text-zinc-400">
+            No failed challenges found.
           </div>
-
-          <div className="relative group overflow-hidden rounded-2xl">
-            <img
-              src="/placeholder.svg?height=200&width=300"
-              alt="Failure example"
-              className="object-cover w-full h-full transition-transform group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex flex-col justify-end">
-              <Badge className="self-start mb-2 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm">
-                Pottery
-              </Badge>
-              <h3 className="text-sm font-bold text-white">
-                My App That Nobody Downloaded
-              </h3>
-            </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[200px] gap-4">
+            {failures.map((fail, idx) => (
+              <FailCard key={fail.id} fail={fail} idx={idx} />
+            ))}
           </div>
-
-          <div className="relative group overflow-hidden rounded-2xl">
-            <img
-              src="/placeholder.svg?height=200width=300"
-              alt="Failure example"
-              className="object-cover transition-transform w-full h-full group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex flex-col justify-end">
-              <Badge className="self-start mb-2 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm">
-                Cooking
-              </Badge>
-              <h3 className="text-sm font-bold text-white">
-                My Sourdough Bread Disaster
-              </h3>
-            </div>
-          </div>
-
-          <div className="relative group overflow-hidden rounded-2xl">
-            <img
-              src="/placeholder.svg?height=200width=300"
-              alt="Failure example"
-              className="object-cover transition-transform w-full h-full group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex flex-col justify-end">
-              <Badge className="self-start mb-2 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm">
-                Content
-              </Badge>
-              <h3 className="text-sm font-bold text-white">
-                My YouTube Channel That Flopped
-              </h3>
-            </div>
-          </div>
-        </div>
+        )}
 
         <div className="mt-8 text-center">
           <Button variant="outline" className="group">
