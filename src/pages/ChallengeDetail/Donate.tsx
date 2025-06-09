@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/SupabaseClient";
 import { useAuth } from "@/context/AuthContext";
 import ConfirmModal from "@/components/ConfirmModal";
+import { Input } from "@/components/ui/input";
 
 interface Supporter {
   user_id: string;
@@ -29,6 +30,8 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingAmount, setPendingAmount] = useState<number | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customValue, setCustomValue] = useState(10);
 
   useEffect(() => {
     if (!challengeId) return;
@@ -113,10 +116,21 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
       return;
     }
     if (amount === 0) {
-      alert("Custom Amount (not implemented yet)");
+      setCustomOpen(true);
+      setCustomValue(10);
       return;
     }
     setPendingAmount(amount);
+    setConfirmOpen(true);
+  };
+
+  const handleCustomSubmit = () => {
+    if (!customValue || isNaN(customValue) || customValue <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+    setCustomOpen(false);
+    setPendingAmount(customValue);
     setConfirmOpen(true);
   };
 
@@ -186,6 +200,56 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
 
   return (
     <>
+      {/* Custom Amount Modal */}
+      {customOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          onClick={() => setCustomOpen(false)}
+        >
+          <Card
+            className="w-full max-w-xs md:max-w-sm relative rounded-2xl shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-3 right-3 text-zinc-400 hover:text-zinc-600 text-2xl font-bold px-2 z-10"
+              onClick={() => setCustomOpen(false)}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+            <CardContent className="flex flex-col items-center gap-6 pt-8 pb-6 px-6">
+              <div className="w-full flex flex-col items-center gap-2 mb-2">
+                <span className="text-lg font-semibold text-zinc-900 text-center">
+                  Enter your custom backing amount
+                </span>
+              </div>
+              <Input
+                type="number"
+                min={1}
+                value={customValue}
+                onChange={(e) => setCustomValue(Number(e.target.value))}
+                className="w-full text-center text-lg font-bold border-2 border-teal-200 focus:border-teal-500 rounded-xl px-4 py-3 outline-none"
+                placeholder="Amount"
+                autoFocus
+              />
+              <div className="flex gap-3 w-full mt-2">
+                <button
+                  className="flex-1 py-2 rounded-lg bg-zinc-200 hover:bg-zinc-300 text-zinc-700 font-medium"
+                  onClick={() => setCustomOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="flex-1 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold"
+                  onClick={handleCustomSubmit}
+                >
+                  Next
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       <ConfirmModal
         open={confirmOpen}
         onClose={() => {
@@ -207,7 +271,6 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
                 : amountError
                 ? "-"
                 : `${amount?.toLocaleString()}`}{" "}
-              backed
             </span>
           </div>
           {/* 100$ 기준 게이지바 */}
@@ -262,18 +325,19 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
               className="w-full"
               onClick={() => handleSupport(0)}
             >
-              Custom Amount
+              Back with Custom Amount
             </Button>
           </div>
           <div className="mb-4 pt-6 border-t border-zinc-100">
-            <Button
+            {/* 공유 기능 아직 구현 안함 */}
+            {/* <Button
               variant="outline"
               className="w-full justify-center"
               onClick={handleShare}
             >
               <Share2 className="h-4 w-4 mr-2" />
               Share
-            </Button>
+            </Button> */}
           </div>
           {/* Recent Supporters Section */}
           <div className="pt-6 border-t border-zinc-100">

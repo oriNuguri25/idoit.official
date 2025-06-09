@@ -8,6 +8,10 @@ import { useEffect, useState } from "react";
 import { Comments } from "@/pages/ChallengeDetail/Comments";
 import LoginModal from "@/components/LoginModal";
 import Donate from "@/pages/ChallengeDetail/Donate";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function ChallengeMain() {
   const params = useParams();
@@ -15,6 +19,9 @@ export default function ChallengeMain() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
     const fetchChallenge = async () => {
@@ -100,6 +107,15 @@ export default function ChallengeMain() {
                   alt={challenge.title}
                   className="object-cover w-full h-full priority"
                 />
+                {user?.id && challenge.user_id === user.id && (
+                  <Button
+                    variant="destructive"
+                    className="absolute top-4 right-4 z-10"
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    Delete
+                  </Button>
+                )}
               </div>
               {/* 카테고리/상태/기간 등은 한 줄에 */}
               <div className="flex flex-wrap items-center gap-4 text-zinc-600 mb-4 text-base">
@@ -202,7 +218,9 @@ export default function ChallengeMain() {
                 </TabsContent>
                 <TabsContent value="materials" className="space-y-4">
                   <h3 className="text-xl font-bold">Materials</h3>
-                  <div className="text-zinc-700">준비물 정보가 없습니다.</div>
+                  <div className="text-zinc-700">
+                    No materials information available.
+                  </div>
                 </TabsContent>
               </Tabs>
 
@@ -226,6 +244,26 @@ export default function ChallengeMain() {
       <LoginModal
         open={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
+      />
+      <ConfirmModal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={async () => {
+          setDeleteOpen(false);
+          if (!challenge.id) return;
+          const { error } = await supabase
+            .from("challenges")
+            .delete()
+            .eq("id", challenge.id);
+          if (!error) {
+            navigate("/");
+          } else {
+            alert("Failed to delete: " + error.message);
+          }
+        }}
+        message={"Are you sure you want to delete this challenge?"}
+        confirmText="Delete"
+        cancelText="Cancel"
       />
     </div>
   );
