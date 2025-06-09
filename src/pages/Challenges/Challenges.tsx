@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import { ExperimentCard } from "@/components/ExperimentCard";
 import { supabase } from "@/lib/supabase/SupabaseClient";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 
 const Challenges = () => {
   const [challenges, setChallenges] = useState<any[]>([]);
