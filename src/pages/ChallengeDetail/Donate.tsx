@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/SupabaseClient";
 import { useAuth } from "@/context/AuthContext";
@@ -192,10 +191,6 @@ export default function Donate({ challengeId, openLoginModal }: DonateProps) {
           setSupportersLoading(false);
         });
     }
-  };
-
-  const handleShare = () => {
-    alert("Share (not implemented yet)");
   };
 
   return (
