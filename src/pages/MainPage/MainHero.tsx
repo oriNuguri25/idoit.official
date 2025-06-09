@@ -39,7 +39,7 @@ const MainHero = () => (
             <Button
               size="lg"
               variant="outline"
-              className="border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white"
+              className="border-white/20 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white cursor-pointer"
             >
               Explore Experiments
             </Button>

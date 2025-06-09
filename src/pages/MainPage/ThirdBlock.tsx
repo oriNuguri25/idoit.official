@@ -64,7 +64,10 @@ const ThirdBlock = () => {
         )}
 
         <div className="mt-8 text-center">
-          <Button variant="outline" className="group">
+          <Button
+            className="bg-amber-400 hover:bg-amber-500 text-white font-semibold px-8 py-3 rounded-full shadow-md transition-all duration-200 group cursor-pointer"
+            onClick={() => (window.location.href = "/archive")}
+          >
             Explore the failure archive
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>

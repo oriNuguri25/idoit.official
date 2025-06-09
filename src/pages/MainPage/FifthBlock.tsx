@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const FifthBlock = () => {
   return (
@@ -19,12 +20,14 @@ const FifthBlock = () => {
                 Remember: you're supposed to fail here.
               </span>
             </p>
-            <Button
-              size="lg"
-              className="bg-teal-500 hover:bg-teal-600 text-white"
-            >
-              Start Your Journey
-            </Button>
+            <Link to="/create">
+              <Button
+                size="lg"
+                className="bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
+              >
+                Start Your Journey
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

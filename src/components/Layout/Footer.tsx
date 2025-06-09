@@ -34,6 +34,19 @@ const Footer = () => {
                 <span className="sr-only">Instagram</span>
               </Button>
             </div>
+            <div className="mt-4">
+              <span className="font-medium text-zinc-700">Contact us:</span>
+              <a
+                href="mailto:contact@idoit.com"
+                className="ml-2 text-teal-600 hover:underline break-all"
+              >
+                byeongjun25@gmail.com
+              </a>
+              <div className="text-xs text-zinc-400 mt-1">
+                We love hearing from you! Feel free to reach out with questions,
+                feedback, or just to say hello.
+              </div>
+            </div>
           </div>
           {/* 네비게이션 */}
           <nav className="flex-1 min-w-[180px] md:pl-8">

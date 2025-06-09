@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ConfirmModal from "@/components/ConfirmModal";
+import Footer from "@/components/Layout/Footer";
 
 export default function ChallengeMain() {
   const params = useParams();
@@ -110,7 +111,7 @@ export default function ChallengeMain() {
                 {user?.id && challenge.user_id === user.id && (
                   <Button
                     variant="destructive"
-                    className="absolute top-4 right-4 z-10"
+                    className="absolute top-4 right-4 z-10 cursor-pointer"
                     onClick={() => setDeleteOpen(true)}
                   >
                     Delete
@@ -240,6 +241,7 @@ export default function ChallengeMain() {
             </div>
           </div>
         </section>
+        <Footer />
       </main>
       <LoginModal
         open={loginModalOpen}
