@@ -13,8 +13,8 @@ const FourthBlock = () => {
             What Our Experimenters Say
           </h2>
           <p className="text-white/80 max-w-2xl mx-auto">
-            Hear from people who've embraced the process and learned from their
-            failures.
+            Hear from people who dared to try, embraced the mess, and inspired
+            others.
           </p>
         </div>
 
@@ -23,24 +23,23 @@ const FourthBlock = () => {
             <div className="flex items-center gap-4 mb-4">
               <Avatar>
                 <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarFallback>LB</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">Jamie Doe</p>
-                <p className="text-sm text-white/60">@tiny_house_builder</p>
+                <p className="font-medium">Liam Brooks</p>
               </div>
             </div>
             <p className="italic text-white/80 mb-4">
-              "Documenting my tiny house build on Idoit changed everything. The
-              support when I messed up the framing was incredible, and the
-              suggestions helped me fix it."
+              "Tried building a robot in under an hour, and it was quite
+              chaotic! But I shared every step, and the community feedback made
+              it one of my favorite learning experiences."
             </p>
             <div className="flex items-center gap-2">
               <Badge className="bg-teal-500/20 text-teal-300 hover:bg-teal-500/30">
-                Tiny House
+                Robotics
               </Badge>
               <Badge className="bg-teal-500/20 text-teal-300 hover:bg-teal-500/30">
-                Construction
+                DIY
               </Badge>
             </div>
           </div>
@@ -49,24 +48,23 @@ const FourthBlock = () => {
             <div className="flex items-center gap-4 mb-4">
               <Avatar>
                 <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>AS</AvatarFallback>
+                <AvatarFallback>EM</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">Alex Smith</p>
-                <p className="text-sm text-white/60">@sketch_novice</p>
+                <p className="font-medium">Ella Martinez</p>
               </div>
             </div>
             <p className="italic text-white/80 mb-4">
-              "I was terrified to share my early drawings, but the community
-              here celebrates the process. Now I look back at my day 1 sketches
-              with pride at how far I've come."
+              "Started a mini rooftop garden with zero experience. Lost half my
+              plants, but shared the whole journey, and now others are trying
+              too!"
             </p>
             <div className="flex items-center gap-2">
               <Badge className="bg-teal-500/20 text-teal-300 hover:bg-teal-500/30">
-                Art
+                Gardening
               </Badge>
               <Badge className="bg-teal-500/20 text-teal-300 hover:bg-teal-500/30">
-                Drawing
+                Urban Farming
               </Badge>
             </div>
           </div>
@@ -75,24 +73,23 @@ const FourthBlock = () => {
             <div className="flex items-center gap-4 mb-4">
               <Avatar>
                 <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>MJ</AvatarFallback>
+                <AvatarFallback>TN</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">Morgan Jones</p>
-                <p className="text-sm text-white/60">@app_developer</p>
+                <p className="font-medium">Tom Nguyen</p>
               </div>
             </div>
             <p className="italic text-white/80 mb-4">
-              "After my app failed to get any downloads, I was devastated.
-              Sharing that experience here helped me understand what went wrong
-              and how to approach my next project."
+              "Posted my first experimental sound track, and it didn't go as
+              planned! But sharing the experience helped me connect with other
+              audio enthusiasts in the community."
             </p>
             <div className="flex items-center gap-2">
               <Badge className="bg-teal-500/20 text-teal-300 hover:bg-teal-500/30">
-                Coding
+                Music
               </Badge>
               <Badge className="bg-teal-500/20 text-teal-300 hover:bg-teal-500/30">
-                App Development
+                Sound Experiment
               </Badge>
             </div>
           </div>

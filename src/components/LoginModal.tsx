@@ -29,8 +29,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
         <CardContent className="flex flex-col items-center gap-6 pt-10 pb-8 px-6">
           {/* 로고 */}
           <div className="flex flex-col items-center mb-2">
-            <span className="text-2xl font-bold text-green-600 tracking-tight">
-              idoit
+            <span className="font-bold text-xl bg-gradient-to-r from-teal-500 to-violet-600 bg-clip-text text-transparent">
+              Idoit
             </span>
           </div>
           {/* Welcome */}

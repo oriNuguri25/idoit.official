@@ -9,10 +9,12 @@ const FirstBlock = () => {
           <Badge className="mb-4 bg-violet-100 text-violet-800 hover:bg-violet-200">
             How It Works
           </Badge>
-          <h2 className="text-3xl font-bold mb-4">Embrace the Process</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Embrace Your Bold, Silly Challenges
+          </h2>
           <p className="text-zinc-600 max-w-2xl mx-auto">
-            Idoit is built on the belief that learning happens when we're
-            willing to try, fail, and try again.
+            Idoit is a space to share imperfect, playful, and honest attempts
+            and get cheered on along the way.
           </p>
         </div>
 
@@ -29,25 +31,25 @@ const FirstBlock = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-4 text-center">
-                Start your journey
+                Post Your Challenge
               </h3>
               <p className="text-zinc-600 text-center mb-6">
-                Choose something you've always wanted to try but were afraid to
-                fail at. Set a timeframe and define what you want to learn.
+                Share that fun, weird, or bold thing you've always wanted to
+                try. No need to promise success the process is what matters.
               </p>
               <div className="mt-auto pt-4 border-t border-zinc-100">
                 <ul className="space-y-2">
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mr-2" />
-                    Define your learning goals
+                    Write a short intro about your challenge
                   </li>
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mr-2" />
-                    Set a realistic timeframe
+                    Set your own pace days, weeks, or months
                   </li>
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mr-2" />
-                    Embrace the possibility of failure
+                    Be open to the unexpected!
                   </li>
                 </ul>
               </div>
@@ -66,25 +68,25 @@ const FirstBlock = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-4 text-center">
-                Document Your Journey
+                Share Your Progress
               </h3>
               <p className="text-zinc-600 text-center mb-6">
-                Share updates, challenges, and breakthroughs. Be honest about
-                what's working and what isn't.
+                Post updates as you go. Success, setbacks, silly moments
+                everything is welcome. Let the community cheer you on.
               </p>
               <div className="mt-auto pt-4 border-t border-zinc-100">
                 <ul className="space-y-2">
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2" />
-                    Post regular updates
+                    Post photos, videos, or short updates
                   </li>
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2" />
-                    Share your challenges openly
+                    Celebrate small wins
                   </li>
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2" />
-                    Document your process, not just results
+                    Share what makes your challenge unique
                   </li>
                 </ul>
               </div>
@@ -103,25 +105,25 @@ const FirstBlock = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-4 text-center">
-                Reflect and Connect
+                Celebrate & Reflect
               </h3>
               <p className="text-zinc-600 text-center mb-6">
-                Whether you succeed or fail, share what you learned. Connect
-                with others on similar journeys.
+                Whether you finish or flop, share what you learned. Inspire
+                others to start their own weird experiments.
               </p>
               <div className="mt-auto pt-4 border-t border-zinc-100">
                 <ul className="space-y-2">
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500 mr-2" />
-                    Extract lessons from your experience
+                    Post your final update (success or failure!)
                   </li>
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500 mr-2" />
-                    Connect with like-minded experimenters
+                    Reflect on the experience
                   </li>
                   <li className="flex items-center text-sm text-zinc-600">
                     <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500 mr-2" />
-                    Apply insights to your next experiment
+                    Connect with other bold creators
                   </li>
                 </ul>
               </div>
